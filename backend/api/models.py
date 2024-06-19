@@ -37,21 +37,22 @@ class CuentaCliente(models.Model):
     ultimo_pedido = models.DateTimeField(null=True, blank=True)
 
 
+class Menu(models.Model):
+    disponible = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Menu {self.fecha}"
+
+
 class Producto(models.Model):
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     disponibilidad = models.BooleanField(default=True)
-    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
-
-
-class Menu(models.Model):
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    fecha = models.DateField()
-    disponible = models.BooleanField(default=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
 
 class Pedido(models.Model):
