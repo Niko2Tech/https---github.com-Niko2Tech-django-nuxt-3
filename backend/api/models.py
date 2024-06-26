@@ -15,7 +15,6 @@ class Proveedor(models.Model):
     telefono = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
     direccion = models.CharField(max_length=255)
-    menu = models.TextField()
     fecha_registro = models.DateTimeField(auto_now_add=True)
 
 
@@ -37,22 +36,33 @@ class CuentaCliente(models.Model):
     ultimo_pedido = models.DateTimeField(null=True, blank=True)
 
 
-class Menu(models.Model):
-    disponible = models.BooleanField(default=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Menu {self.fecha}"
+        return self.nombre
 
 
 class Producto(models.Model):
-    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
+    categoria = models.ForeignKey(
+        Categoria, on_delete=models.CASCADE, null=True, blank=True
+    )
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     disponibilidad = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ultima_actualizacion = models.DateTimeField(auto_now=True)
+    oferta = models.BooleanField(default=False)
+    porcentaje_descuento = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0
+    )
+    imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
+
+    # texto que se muestra en el admin
+    def __str__(self):
+        return self.nombre + " - " + str(self.precio)
 
 
 class Pedido(models.Model):
@@ -84,12 +94,3 @@ class RutaEntrega(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=50)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
-
-
-class Restaurant(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.CharField(max_length=255)
-    telefono = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
-    fecha_registro = models.DateTimeField(auto_now_add=True)
-    activo = models.BooleanField(default=True)

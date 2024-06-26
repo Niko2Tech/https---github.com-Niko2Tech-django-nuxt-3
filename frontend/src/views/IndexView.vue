@@ -5,6 +5,5 @@ import Header from '@/components/Header.vue'
 <template>
   <Header />
   <main>
-    <h1>Index View</h1>
   </main>
 </template>

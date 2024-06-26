@@ -5,6 +5,6 @@ from .views import *
 # router de rest_framework
 routers = routers.DefaultRouter()
 routers.register("api/user", UserViewSet, "user")
-routers.register("api/menu", MenuViewSet, "menu")
+routers.register("api/producto", ProductoViewSet, "producto")
 
 urlpatterns = routers.urls

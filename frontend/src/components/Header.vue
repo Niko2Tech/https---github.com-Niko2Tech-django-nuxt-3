@@ -1,34 +1,48 @@
 <template>
-    <div class="w-full h-screen bg-gradient-to-b from-yellow-400 to-yellow-600">
+    <div class="w-full min-h-[500px] bg-gradient-to-b from-yellow-400 to-yellow-600">
         <nav class="bg-white shadow-md">
             <div class="container mx-auto px-4 py-2 flex justify-between items-center">
                 <div class="flex items-center">
-                    <!-- <img src="logo.png" alt="El Comilón Logo" class="h-10"> -->
-                    <span class="ml-2 text-2xl font-bold text-orange-600">ELCOMILON</span>
+                    <img src="../assets/burgerLogo.svg" alt="Logo" class="w-12 h-12">
+                    <span class="ml-2 text-2xl font-bold text-yellow-500"><span
+                            class="text-orange-600">EL</span>COMILON</span>
                 </div>
-                <div class="flex    ">
-                    <span class="text-sm text-gray-600">Envios: </span>
-                    <span class="text-sm text-gray-600">Ubicacion Serrano 1105, Duoc UC, Melipilla</span>
+                <div class="gap-1 hidden md:flex">
+                    <p class="text-sm text-gray-600">Envios: </p>
+                    <p class="text-sm text-gray-600 font-semibold"><span class="text-yellow-600"><font-awesome-icon
+                                icon="fa-solid fa-location-dot" />
+                        </span> Serrano
+                        1105, Duoc UC, Melipilla</p>
                 </div>
                 <div class="flex space-x-4 items-center">
-                    <input type="text" placeholder="Buscar" class="px-2 py-1 border rounded">
-                    <button class="px-4 py-1 bg-orange-500 text-white rounded hover:bg-orange-600">Login</button>
+                    <div class="text-yellow-600  gap-1 items-center justify-center hidden md:flex">
+                        <label for="buscador"><font-awesome-icon :icon="['fas', 'magnifying-glass']" /></label>
+                        <input type="text" placeholder="Buscar" class="px-2 py-1" id="buscador">
+                    </div>
+                    <button
+                        class="px-4 py-2 text-yellow-600 font-semibold rounded shadow-lg hover:bg-gray-200 transition-all duration-100"><font-awesome-icon
+                            :icon="['fas', 'user']" /> Login</button>
+                    <button class="text-yellow-600 hover:text-yellow-500 transition-all duration-100"><font-awesome-icon
+                            :icon="['fas', 'cart-shopping']" /></button>
                 </div>
             </div>
         </nav>
-        <header class="flex flex-col items-center justify-center h-full text-white text-center">
-            <h1 class="text-5xl font-bold mb-4">Tienes hambre?</h1>
-            <p class="text-lg mb-6">El Comilón, tiene los mejores platos para ti</p>
-            <button class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">CONSULTA LA CARTA</button>
-            <!-- <img src="plato.png" alt="Plato de Comida" class="mt-8 w-1/2 max-w-sm"> -->
+        <header class="flex min-h-min flex-col md:flex-row md:h-[500px] items-center justify-center gap-4">
+            <div class="flex flex-col items-start justify-center h-full md:pl-20 text-white w-1/2">
+                <h1 class="text-6xl font-bold mb-4">Tienes hambre?</h1>
+                <p class="text-lg mb-10">El Comilón, tiene los mejores platos para ti</p>
+                <button
+                    class="px-4 py-3 bg-orange-500 text-gray-50 rounded-3xl font-medium hover:bg-orange-600">CONSULTA
+                    LA
+                    CARTA</button>
+            </div>
+            <div class="flex w-1/2 h-full flex-col md:justify-end md:items-end md:mr-20">
+                <img src="../assets/img/ImageBase.png" alt="Plato de Comida" class="max-w-sm">
+            </div>
         </header>
     </div>
 </template>
 
 <script>
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 </script>
-
-<style scoped>
-/* Puedes añadir estilos adicionales aquí si lo deseas */
-</style>
