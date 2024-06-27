@@ -1,0 +1,48 @@
+<template>
+    <div class="max-w-sm rounded-2xl overflow-hidden shadow-md">
+        <article class="relative h-48 w-full">
+            <img :src="`http://127.0.0.1:8000${data.imagen}`" alt="data Imagen" class="w-full h-full object-cover" />
+            <div v-if="data.oferta" class="absolute bottom-0 left-0 bg-yellow-500 text-black px-2 py-1 rounded-tr-lg">
+                <div class="flex gap-1 items-center justify-center text-white ">
+                    <p class="text-3xl font-semibold">{{ Math.round(data.porcentaje_descuento * 100) }}</p>
+                    <div class="flex flex-col text-sm p-0 justify-center items-center">
+                        <p class="font-semibold">%</p>
+                        <p>Off</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <div class="px-6 py-4">
+            <h3 class="font-bold text-xl mb-2">{{ data.nombre }}</h3>
+            <p v-if="data.oferta" class="text-gray-700 flex gap-2">
+                <span class="line-through text-gray-500">{{ formatter(data.precio) }}</span>
+                <span class="font-bold text-red-500">{{ formatter((data.precio * (1 -
+                    data.porcentaje_descuento)).toFixed(2))
+                    }}</span>
+            </p>
+            <p v-else class="text-gray-700">
+                <span class="font-bold">${{ data.precio }}</span>
+            </p>
+            <button class="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                Agregar
+            </button>
+        </div>
+    </div>
+</template>
+
+<script setup>
+const props = defineProps({
+    data: {
+        type: Object,
+        required: true
+    }
+})
+
+// funcion moneda local chile
+function formatter(monto) {
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP'
+    }).format(monto)
+}
+</script>
