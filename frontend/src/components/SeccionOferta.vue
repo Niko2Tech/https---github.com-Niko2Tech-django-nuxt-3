@@ -1,6 +1,8 @@
 <template>
     <section v-if="ofertas && ofertas.length" class="container mx-auto my-5">
-        <h2 class="text-3xl font-bold text-center my-8">Productos en oferta</h2>
+        <h2 class="text-3xl font-bold text-center my-8 text-orange-600"><span class="text-yellow-500">Productos
+                en</span>
+            oferta</h2>
         <div class="relative overflow-hidden w-full">
             <div x-data="{}" x-init="$nextTick(() => {
                         let ul = $refs.logos;

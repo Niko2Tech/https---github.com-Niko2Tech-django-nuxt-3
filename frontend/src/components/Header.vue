@@ -11,15 +11,22 @@
                     <p class="text-sm text-gray-600">Envios: </p>
                     <p class="text-sm text-gray-600 font-semibold"><span class="text-yellow-600"><font-awesome-icon
                                 icon="fa-solid fa-location-dot" />
-                        </span> Serrano
-                        1105, Duoc UC, Melipilla</p>
+                        </span> {{ direccion ? direccion : 'No disponible' }}</p>
                 </div>
                 <div class="flex space-x-4 items-center">
-                    <button
-                        class="px-4 py-2 text-yellow-600 font-semibold rounded shadow-lg hover:bg-gray-200 transition-all duration-100"><font-awesome-icon
-                            :icon="['fas', 'user']" /> Login</button>
-                    <button class="text-yellow-600 hover:text-yellow-500 transition-all duration-100"><font-awesome-icon
-                            :icon="['fas', 'cart-shopping']" /></button>
+                    <RouterLink to="/login"
+                        class="px-4 py-2 text-yellow-600 font-semibold rounded shadow-lg hover:bg-gray-200 transition-all duration-100">
+                        <font-awesome-icon :icon="['fas', 'user']" /> {{ cliente ? cliente : 'Login' }}</RouterLink>
+                    <div class="relative">
+                        <RouterLink to="/cart"
+                            class="text-yellow-600 hover:text-yellow-500 transition-all duration-100 text-xl px-4">
+                            <font-awesome-icon :icon="['fas', 'cart-shopping']" />
+                            <span v-if="cartCount > 0"
+                                class="absolute bottom-0 right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center hover:bg-red-500 transition-all duration-100">
+                                {{ cartCount }}
+                            </span>
+                        </RouterLink>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -42,7 +49,22 @@
 
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { RouterLink } from 'vue-router'
+import { useCartStore } from '@/stores/cart'
+import { computed, defineProps } from 'vue'
+const props = defineProps({
+    cliente: {
+        type: String,
+        required: false
+    },
+    direccion: {
+        type: String,
+        required: false
+    }
+});
 
+const cartStore = useCartStore();
+const cartCount = computed(() => cartStore.cartCount);
 const smoothScroll = (target) => {
     document.querySelector(target).scrollIntoView({ behavior: 'smooth' });
 }

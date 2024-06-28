@@ -17,20 +17,23 @@
             <p v-if="data.oferta" class="text-gray-700 flex gap-2">
                 <span class="line-through text-gray-500">{{ formatter(data.precio) }}</span>
                 <span class="font-bold text-red-500">{{ formatter((data.precio * (1 -
-                    data.porcentaje_descuento)).toFixed(2))
-                    }}</span>
+                    data.porcentaje_descuento)).toFixed(2)) }}</span>
             </p>
-            <p v-else class="text-gray-700">
-                <span class="font-bold">${{ data.precio }}</span>
+            <p v-else>
+                <span class="font-semibold">{{ formatter(data.precio) }}</span>
             </p>
-            <button class="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-                Agregar
+            <button @click="handleAddToCart"
+                class="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded"
+                :disabled="data.disponibilidad === false">
+                {{ data.disponibilidad ? 'Agregar' : 'No disponible' }}
             </button>
         </div>
     </div>
 </template>
 
 <script setup>
+import { useCartStore } from '@/stores/cart'
+
 const props = defineProps({
     data: {
         type: Object,
@@ -38,7 +41,14 @@ const props = defineProps({
     }
 })
 
-// funcion moneda local chile
+const cartStore = useCartStore()
+
+function handleAddToCart() {
+    cartStore.addToCart(props.data)
+    window.showNotification(`Producto ${props.data.nombre} agregado al carrito`)
+}
+
+// función para formatear moneda local Chile
 function formatter(monto) {
     return new Intl.NumberFormat('es-CL', {
         style: 'currency',

@@ -1,36 +1,30 @@
 <template>
-    <section id="carta">
-        <h2>Carta</h2>
-        <p>En nuestra carta encontrarás una amplia variedad de platos, desde los más tradicionales hasta los más
-            innovadores. ¡Seguro que encuentras algo que te gusta!</p>
-        <div class="carta">
-            <div class="plato">
-                <h3>Plato 1</h3>
-                <p>Descripción del plato 1</p>
+    <section id="carta" class="container mx-auto my-5">
+        <h2 class="text-3xl font-bold text-center my-8">Nuestra carta</h2>
+        <article v-for="(categoria, index) in data" :key="index">
+            <h3 class="text-2xl font-bold text-center my-8">{{ categoria.nombre }}</h3>
+            <div class="flex flex-wrap gap-8">
+                <div v-for="producto in categoria.productos" :key="producto.id">
+                    <CardOferta :data="producto" />
+                </div>
             </div>
-            <div class="plato">
-                <h3>Plato 2</h3>
-                <p>Descripción del plato 2</p>
-            </div>
-            <div class="plato">
-                <h3>Plato 3</h3>
-                <p>Descripción del plato 3</p>
-            </div>
-            <div class="plato">
-                <h3>Plato 4</h3>
-                <p>Descripción del plato 4</p>
-            </div>
-            <div class="plato">
-                <h3>Plato 5</h3>
-                <p>Descripción del plato 5</p>
-            </div>
-            <div class="plato">
-                <h3>Plato 6</h3>
-                <p>Descripción del plato 6</p>
-            </div>
-        </div>
+        </article>
     </section>
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
+import CardOferta from './CardOferta.vue';
+async function getProductos() {
+    const response = await fetch('http://127.0.0.1:8000/api/producto/productos_categoria/');
+    const data = await response.json();
+    return data;
+}
+
+const data = ref([]);
+
+onMounted(async () => {
+    data.value = await getProductos();
+});
+
 </script>
