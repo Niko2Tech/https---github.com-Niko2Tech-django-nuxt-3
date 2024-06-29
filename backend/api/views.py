@@ -37,7 +37,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(
             {
-                "refresh": str(refresh),
                 "access": str(refresh.access_token),
                 "username": user.username,
                 "cliente": cliente.nombre if cliente else None,
@@ -47,37 +46,12 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
     @action(detail=False, methods=["post"])
-    def check_auth(self, request):
-        token = request.data.get("token")
-        try:
-            access_token = AccessToken(token)
-            user_id = access_token["user_id"]
-            user = User.objects.get(id=user_id)
-
-            # Buscamos el nombre del cliente asociado al usuario
-            cliente = Cliente.objects.filter(usuario=user).first()
-
-            return Response(
-                {
-                    "detail": "Token válido",
-                    "username": user.username,
-                    "cliente": cliente.nombre if cliente else None,
-                    "direccion": cliente.direccion if cliente else "",
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response(
-                {"error": "Token inválido", "details": str(e)},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    @action(detail=False, methods=["post"])
     def register(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data["email"]
             password = serializer.validated_data["password"]
+            password_confirmation = serializer.validated_data["password_confirmation"]
             nombre = serializer.validated_data["nombre"]
             direccion = serializer.validated_data["direccion"]
             telefono = serializer.validated_data["telefono"]
@@ -109,7 +83,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(
                 {
                     "detail": "Usuario registrado exitosamente",
-                    "refresh": str(refresh),
                     "access": str(refresh.access_token),
                     "username": user.username,
                     "cliente": cliente.nombre,
@@ -121,11 +94,33 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=["post"])
+    def check_auth(self, request):
+        token = request.data.get("token")
+        try:
+            access_token = AccessToken(token)
+            user_id = access_token.get("user_id")
+            user = User.objects.get(id=user_id)
+
+            # Buscamos el nombre del cliente asociado al usuario
+            cliente = Cliente.objects.filter(usuario=user).first()
+
+            return Response(
+                {
+                    "detail": "Token válido",
+                    "username": user.username,
+                    "cliente": cliente.nombre if cliente else None,
+                    "direccion": cliente.direccion if cliente else "",
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Token inválido", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    @action(detail=False, methods=["post"])
     def logout(self, request):
-        # eliminamos el token de acceso
-        refresh_token = request.data.get("refresh")
-        token = RefreshToken(refresh_token)
-        token.blacklist()
         return Response({"detail": "Sesión cerrada"}, status=status.HTTP_200_OK)
 
 

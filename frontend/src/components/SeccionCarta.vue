@@ -1,8 +1,7 @@
 <template>
     <section id="carta" class="container mx-auto my-5">
-        <h2 class="text-3xl font-bold text-center my-8">Nuestra carta</h2>
         <article v-for="(categoria, index) in data" :key="index">
-            <h3 class="text-2xl font-bold text-center my-8">{{ categoria.nombre }}</h3>
+            <h3 class="text-3xl font-bold text-center my-8">{{ categoria.nombre }}</h3>
             <div class="flex flex-wrap gap-8">
                 <div v-for="producto in categoria.productos" :key="producto.id">
                     <CardOferta :data="producto" />

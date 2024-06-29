@@ -1,4 +1,3 @@
-// stores/auth.js
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
@@ -7,7 +6,6 @@ export const useAuthStore = defineStore('auth', {
         cliente: null,
         direccion: null,
         accessToken: localStorage.getItem('access_token') || null,
-        refreshToken: localStorage.getItem('refresh_token') || null,
     }),
     getters: {
         isAuthenticated: (state) => !!state.accessToken,
@@ -24,20 +22,20 @@ export const useAuthStore = defineStore('auth', {
                 })
 
                 if (!response.ok) {
-                    throw new Error('Error durante el inicio de sesión')
+                    const data = await response.json()
+                    return data
                 }
 
                 const data = await response.json()
 
                 this.accessToken = data.access
-                this.refreshToken = data.refresh
+
                 this.user = data.username
                 this.cliente = data.cliente
                 this.direccion = data.direccion
 
-
                 localStorage.setItem('access_token', this.accessToken)
-                localStorage.setItem('refresh_token', this.refreshToken)
+
 
                 return data
             } catch (error) {
@@ -56,10 +54,17 @@ export const useAuthStore = defineStore('auth', {
                 })
 
                 if (!response.ok) {
-                    throw new Error('Error durante el registro')
+                    const data = await response.json()
+                    return { error: data }
                 }
 
                 const responseData = await response.json()
+                this.accessToken = responseData.access
+                this.user = responseData.username
+                this.cliente = responseData.cliente
+                this.direccion = responseData.direccion
+
+                localStorage.setItem('access_token', this.accessToken)
                 return responseData
             } catch (error) {
                 console.error(error)
@@ -72,8 +77,7 @@ export const useAuthStore = defineStore('auth', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ refresh: this.refreshToken }),
+                    }
                 })
 
                 if (!response.ok) {
@@ -81,12 +85,11 @@ export const useAuthStore = defineStore('auth', {
                 }
 
                 this.accessToken = null
-                this.refreshToken = null
                 this.user = null
                 this.cliente = null
+                this.direccion = null
 
                 localStorage.removeItem('access_token')
-                localStorage.removeItem('refresh_token')
 
                 const responseData = await response.json()
                 return responseData
@@ -96,8 +99,6 @@ export const useAuthStore = defineStore('auth', {
             }
         },
         async checkAuth() {
-            if (!this.accessToken) return
-
             try {
                 const response = await fetch('http://127.0.0.1:8000/api/user/check_auth/', {
                     method: 'POST',
@@ -121,7 +122,6 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error(error)
                 this.logout()
-                throw error
             }
         },
     },

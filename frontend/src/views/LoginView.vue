@@ -1,32 +1,50 @@
-<!-- views/Login.vue -->
 <template>
-    <div>
-        <form @submit.prevent="handleLogin">
-            <input v-model="email" type="text" placeholder="Email" required />
-            <input v-model="password" type="password" placeholder="Password" required />
-            <button type="submit">Login</button>
-        </form>
+    <div class="h-screen w-full flex justify-center items-center">
+        <transition>
+            <div class="w-96" v-if="login">
+                <Login @mostrar-registro="mostrarRegistro" />
+
+            </div>
+        </transition>
+        <transition>
+            <div class="w-96" v-if="registro">
+                <Register @mostrar-login="mostrarLogin" />
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router'
+import Login from '@/components/Login.vue'
+import Register from '@/components/Register.vue'
 
-const router = useRouter()
+const registro = ref(false)
+const login = ref(true)
 
-const authStore = useAuthStore()
-const email = ref('')
-const password = ref('')
+function mostrarRegistro() {
+    login.value = false
+    setTimeout(() => {
+        registro.value = true
+    }, 500)
 
-const handleLogin = async () => {
-    try {
-        await authStore.login(email.value, password.value)
-        // redirigir al index
-        router.push('/')
-    } catch (error) {
-        alert('Error durante el inicio de sesión')
-    }
+}
+
+function mostrarLogin() {
+    registro.value = false
+    setTimeout(() => {
+        login.value = true
+    }, 500)
 }
 </script>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+</style>

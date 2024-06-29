@@ -24,7 +24,7 @@ app.mount('#app')
 // Guard de navegación
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
-
+    await authStore.checkAuth()
     // Check if the route requires authentication
     if (to.meta.requiresAuth) {
         // Check the auth status before navigating
