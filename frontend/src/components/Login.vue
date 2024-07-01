@@ -39,6 +39,12 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 
+const props = defineProps({
+    redirect: {
+        type: String,
+        default: '/'
+    }
+})
 const emit = defineEmits(['mostrar-registro'])
 
 const router = useRouter()
@@ -54,7 +60,7 @@ const handleLogin = async () => {
             error.value = data.error
             return
         }
-        router.push('/')
+        router.push(props.redirect)
     } catch (error) {
         alert('Error durante el inicio de sesión')
     }

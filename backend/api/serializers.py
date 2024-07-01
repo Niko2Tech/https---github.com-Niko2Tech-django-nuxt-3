@@ -40,3 +40,82 @@ class RegisterSerializer(serializers.Serializer):
                 "El telefono no es valido (Ej: +56912345678)"
             )
         return data
+
+
+class PedidoCreateSerializer(serializers.Serializer):
+    estado = serializers.ChoiceField(choices=Pedido.CHOISE_ESTADO)
+    total = serializers.DecimalField(max_digits=10, decimal_places=2)
+    cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())
+    tipo_entrega = serializers.CharField(max_length=50)
+    direccion_entrega = serializers.CharField(max_length=255)
+    productos = serializers.PrimaryKeyRelatedField(
+        queryset=Producto.objects.all(), many=True
+    )
+    metodo_pago = serializers.ChoiceField(choices=DetallePago.CHOISE_METODO_PAGO)
+    monto = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+    def create(self, validated_data):
+        metodo_pago = validated_data.pop("metodo_pago")
+        monto = validated_data.pop("monto")
+        productos = validated_data.pop("productos")
+
+        pedido = Pedido.objects.create(**validated_data)
+        pedido.productos.set(productos)
+
+        DetallePago.objects.create(pedido=pedido, metodo_pago=metodo_pago, monto=monto)
+
+        # creamos la ruta de entrega
+        repartidor = Repartidor.objects.filter(estado="disponible").first()
+        if repartidor:
+            RutaEntrega.objects.create(
+                repartidor=repartidor, pedido=pedido, estado="pendiente"
+            )
+            repartidor.estado = "ocupado"
+            repartidor.save()
+
+        # buscamos el saldo del modelo cliente
+        cliente = Cliente.objects.get(id=validated_data["cliente"].id)
+        # si el monto es mayor al saldo de la cuenta del cliente dejamos la cuenta del cliente en 0 y si el monto es menor restamos el monto al saldo de la cuenta del cliente
+        if cliente.saldo_cuenta >= monto:
+            cliente.saldo_cuenta -= monto
+        else:
+            cliente.saldo_cuenta = 0
+        cliente.save()
+        return pedido
+
+
+class PedidoSerializer(serializers.ModelSerializer):
+    productos = ProductoSerializer(many=True)
+
+    class Meta:
+        model = Pedido
+        fields = [
+            "id",
+            "fecha",
+            "estado",
+            "total",
+            "tipo_entrega",
+            "direccion_entrega",
+            "fecha_actualizacion",
+            "cliente",
+            "repartidor",
+            "productos",
+        ]
+
+
+class DetallePagoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DetallePago
+        fields = "__all__"
+
+
+class ClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cliente
+        fields = "__all__"
+
+
+class CuentaClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CuentaCliente
+        fields = "__all__"

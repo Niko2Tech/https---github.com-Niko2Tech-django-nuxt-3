@@ -65,8 +65,15 @@ class Producto(models.Model):
 
 
 class Pedido(models.Model):
+    CHOISE_ESTADO = [
+        ("pendiente", "Pendiente"),
+        ("en_preparacion", "En preparación"),
+        ("en_camino", "En camino"),
+        ("entregado", "Entregado"),
+        ("cancelado", "Cancelado"),
+    ]
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=50)
+    estado = models.CharField(max_length=50, choices=CHOISE_ESTADO)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     tipo_entrega = models.CharField(max_length=50)
@@ -79,6 +86,12 @@ class Pedido(models.Model):
 
 
 class DetallePago(models.Model):
+    CHOISE_METODO_PAGO = [
+        ("debito", "Debito"),
+        ("efectivo", "Efectivo"),
+        ("credito", "Credito"),
+        ("webpay", "Webpay"),
+    ]
     pedido = models.OneToOneField(Pedido, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
@@ -88,7 +101,6 @@ class DetallePago(models.Model):
 class CuentaCliente(models.Model):
     cliente = models.OneToOneField(Cliente, on_delete=models.CASCADE)
     saldo = models.DecimalField(max_digits=10, decimal_places=2)
-    historial_pedido = models.ManyToManyField(Pedido)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     ultimo_pedido = models.DateTimeField(null=True, blank=True)
 

@@ -2,13 +2,13 @@
     <div class="h-screen w-full flex justify-center items-center">
         <transition>
             <div class="w-96" v-if="login">
-                <Login @mostrar-registro="mostrarRegistro" />
+                <Login @mostrar-registro="mostrarRegistro" :redirect="queryRedirect" />
 
             </div>
         </transition>
         <transition>
             <div class="w-96" v-if="registro">
-                <Register @mostrar-login="mostrarLogin" />
+                <Register @mostrar-login="mostrarLogin" :redirect="queryRedirect" />
             </div>
         </transition>
     </div>
@@ -18,9 +18,14 @@
 import { ref } from 'vue'
 import Login from '@/components/Login.vue'
 import Register from '@/components/Register.vue'
+import { useRoute } from 'vue-router';
+
 
 const registro = ref(false)
 const login = ref(true)
+const route = useRoute()
+
+const queryRedirect = ref(route.query.redirect);
 
 function mostrarRegistro() {
     login.value = false

@@ -3,8 +3,10 @@ import { defineStore } from 'pinia'
 export const useAuthStore = defineStore('auth', {
     state: () => ({
         user: null,
+        userId: null,
         cliente: null,
         direccion: null,
+        saldo: null,
         accessToken: localStorage.getItem('access_token') || null,
     }),
     getters: {
@@ -31,8 +33,10 @@ export const useAuthStore = defineStore('auth', {
                 this.accessToken = data.access
 
                 this.user = data.username
+                this.userId = data.user_id
                 this.cliente = data.cliente
                 this.direccion = data.direccion
+                this.saldo = data.saldo
 
                 localStorage.setItem('access_token', this.accessToken)
 
@@ -61,8 +65,10 @@ export const useAuthStore = defineStore('auth', {
                 const responseData = await response.json()
                 this.accessToken = responseData.access
                 this.user = responseData.username
+                this.userId = responseData.user_id
                 this.cliente = responseData.cliente
                 this.direccion = responseData.direccion
+                this.saldo = responseData.saldo
 
                 localStorage.setItem('access_token', this.accessToken)
                 return responseData
@@ -86,9 +92,10 @@ export const useAuthStore = defineStore('auth', {
 
                 this.accessToken = null
                 this.user = null
+                this.userId = null
                 this.cliente = null
                 this.direccion = null
-
+                this.saldo = null
                 localStorage.removeItem('access_token')
 
                 const responseData = await response.json()
@@ -115,8 +122,10 @@ export const useAuthStore = defineStore('auth', {
                 const data = await response.json()
 
                 this.user = data.username
+                this.userId = data.user_id
                 this.cliente = data.cliente
                 this.direccion = data.direccion
+                this.saldo = data.saldo
 
                 return data
             } catch (error) {

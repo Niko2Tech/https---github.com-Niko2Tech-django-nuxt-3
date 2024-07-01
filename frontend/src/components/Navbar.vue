@@ -1,11 +1,13 @@
 <template>
     <nav class="bg-white shadow-md flex w-full fixed z-50 h-16">
         <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-            <div class="flex items-center">
+            <RouterLink class="flex items-center" to="/">
                 <img src="@/assets/burgerLogo.svg" alt="Logo" class="w-12 h-12">
-                <span class="ml-2 text-2xl font-bold text-yellow-500"><span
-                        class="text-orange-600">EL</span>COMILON</span>
-            </div>
+                <p class="hidden sm:flex">
+                    <span class="ml-2 text-2xl font-bold text-yellow-500"><span
+                            class="text-orange-600">EL</span>COMILON</span>
+                </p>
+            </RouterLink>
             <div class="gap-1 hidden md:flex">
                 <p class="text-sm text-gray-600">Envios: </p>
                 <p class="text-sm text-gray-600 font-semibold"><span class="text-yellow-600"><font-awesome-icon

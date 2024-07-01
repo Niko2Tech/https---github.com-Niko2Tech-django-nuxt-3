@@ -5,6 +5,7 @@ from api.serializers import *
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from decimal import Decimal
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -41,6 +42,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 "username": user.username,
                 "cliente": cliente.nombre if cliente else None,
                 "direccion": cliente.direccion if cliente else "",
+                "saldo": cliente.saldo_cuenta if cliente else "",
+                "user_id": user.id,
             },
             status=status.HTTP_200_OK,
         )
@@ -85,8 +88,10 @@ class UserViewSet(viewsets.ModelViewSet):
                     "detail": "Usuario registrado exitosamente",
                     "access": str(refresh.access_token),
                     "username": user.username,
+                    "user_id": user.id,
                     "cliente": cliente.nombre,
                     "direccion": cliente.direccion,
+                    "saldo": cliente.saldo_cuenta,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -108,8 +113,10 @@ class UserViewSet(viewsets.ModelViewSet):
                 {
                     "detail": "Token válido",
                     "username": user.username,
+                    "user_id": user.id,
                     "cliente": cliente.nombre if cliente else None,
                     "direccion": cliente.direccion if cliente else "",
+                    "saldo": cliente.saldo_cuenta if cliente else "",
                 },
                 status=status.HTTP_200_OK,
             )
@@ -149,3 +156,68 @@ class ProductoViewSet(viewsets.ModelViewSet):
             )
 
         return Response(response_data, status=status.HTTP_200_OK)
+
+
+class PedidoViewSet(viewsets.ModelViewSet):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=["post"])
+    def generar_pedido(self, request):
+        serializer = PedidoCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            pedido = serializer.save()
+            response_serializer = PedidoSerializer(pedido)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=["get"])
+    def pedidos_usuario(self, request):
+        pk = request.query_params.get("user_id")
+        # buscamos al usuario por su id
+        user = User.objects.get(id=pk)
+        # buscamos al cliente asociado al usuario
+        cliente = Cliente.objects.get(usuario=user)
+        # buscamos los pedidos asociados al cliente
+        pedidos = Pedido.objects.filter(cliente=cliente).order_by("-fecha")
+        serializer = PedidoSerializer(pedidos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DetallePagoViewSet(viewsets.ModelViewSet):
+    queryset = DetallePago.objects.all()
+    serializer_class = DetallePagoSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class ClienteViewSet(viewsets.ModelViewSet):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @action(detail=False, methods=["post"])
+    def agregar_saldo(self, request):
+        # buscamos el user id en los parametros de la petición
+        user_id = request.data.get("user_id")
+        # validamos que el usuario exista
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            return Response(
+                {"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND
+            )
+        # buscamos el cliente asociado al usuario
+        cliente = Cliente.objects.get(usuario=user_id)
+        # buscamos el saldo a agregar
+        saldo = request.data.get("saldo_cuenta")
+        # validamos el saldo
+        if saldo <= 0:
+            return Response(
+                {"error": "El saldo a agregar debe ser mayor a 0"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # agregamos el saldo al cliente
+        cliente.saldo_cuenta += Decimal(saldo)
+        cliente.save()
+        # retornamos el saldo actualizado
+        return Response({"saldo": cliente.saldo_cuenta}, status=status.HTTP_200_OK)

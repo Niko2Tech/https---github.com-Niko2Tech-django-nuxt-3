@@ -1,6 +1,6 @@
 // stores/cart.js
 import { defineStore } from 'pinia'
-import { getCart, addToCart as addProductToCart } from '@/utils/cart'
+import { getCart, addToCart as addProductToCart, clearCart as deleteCard } from '@/utils/cart'
 
 export const useCartStore = defineStore('cart', {
     state: () => ({
@@ -16,7 +16,7 @@ export const useCartStore = defineStore('cart', {
         },
         clearCart() {
             this.cart = []
-            clearCart()
+            deleteCard()
         }
     }
 })

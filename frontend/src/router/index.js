@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import IndexView from '../views/IndexView.vue'
 import CartView from '../views/CartView.vue'
 import LoginView from '../views/LoginView.vue'
-import CheckOutView from '../views/CheckOutView.vue'
+import HistorialPedidos from '../views/HistorialPedidos.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,9 +23,9 @@ const router = createRouter({
       component: LoginView
     },
     {
-      path: '/checkout',
-      name: 'checkout',
-      component: CheckOutView
+      path: '/pedidos',
+      name: 'pedidos',
+      component: HistorialPedidos
     }
   ]
 })

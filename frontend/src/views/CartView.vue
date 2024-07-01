@@ -16,14 +16,37 @@
                 <button @click="handleRemoveFromCart(item)"
                     class="text-red-500 font-bold hover:text-red-400">Eliminar</button>
             </article>
-            <div class="mt-6 p-4 border-t flex items-center justify-end gap-4">
-                <p class="text-xl font-bold">Total Carrito: {{ formatter(calculateCartTotal()) }}</p>
-                <button class="px-4 py-2 bg-yellow-500 text-white font-bold rounded hover:bg-yellow-400"
-                    @click="comprarCarrito()">Comprar</button>
+            <div class="mt-6 p-4 border-t flex items-center justify-between gap-4">
+                <section v-if="!isAuthenticated">
+                    <p class="text-gray-500 mb-4 text-xl">Debes iniciar sesión para comprar</p>
+                    <RouterLink to="/login?redirect=/cart"
+                        class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-400">
+                        Iniciar sesión
+                    </RouterLink>
+                </section>
+                <section v-else>
+                    <p class="text-xl font-semibold my-4">Envio a domicilio: {{ direccion }}</p>
+                    <p>Saldo actual de tu cuenta: {{ saldo }}</p>
+                </section>
+                <div>
+                    <p class="text-xl font-semibold mb-4">Total Carrito: {{ formatter(calculateCartTotal()) }}</p>
+                    <BotonModal @click="abrirModal('finalizarCompra')"
+                        :colorClasses="!isAuthenticated ? 'px-4 py-2 bg-gray-500' : 'px-4 py-2 bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-400'"
+                        :id="'finalizarCompra'" :disabled="!isAuthenticated">
+                        Confirmar compra
+                    </BotonModal>
+                    <Modal :visible="modalAbierto === 'finalizarCompra'" @update:visible="cerrarModal"
+                        :title="'Confirmar compra'">
+                        <FormularioPago :saldo="saldo" :direccion="direccion" :totalPagar="calculateCartTotal()" />
+                    </Modal>
+                </div>
             </div>
         </section>
         <section v-else>
-            <p class="text-gray-500">El carrito está vacío</p>
+            <p class="text-gray-500 mb-4">El carrito está vacío</p>
+            <RouterLink to="/" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded hover:bg-yellow-400">
+                Volver
+                al menú</RouterLink>
         </section>
     </main>
 </template>
@@ -32,10 +55,26 @@
 import { onMounted, ref } from 'vue';
 import { getCart, removeFromCart } from '@/utils/cart';
 import Navbar from '@/components/Navbar.vue';
+import Modal from '@/components/Modal.vue';
+import BotonModal from '@/components/BotonModal.vue';
+import FormularioPago from '@/components/FormularioPago.vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authStore';
+import { RouterLink } from 'vue-router';
 
 const router = useRouter();
 const cart = ref([]);
+const isAuthenticated = useAuthStore().isAuthenticated;
+const direccion = useAuthStore().direccion;
+const saldo = useAuthStore().saldo;
+
+const modalAbierto = ref(null);
+function abrirModal(id) {
+    modalAbierto.value = id;
+}
+function cerrarModal() {
+    modalAbierto.value = null;
+}
 
 onMounted(() => {
     cart.value = getCart();
@@ -47,9 +86,9 @@ function handleRemoveFromCart(item) {
 }
 
 function calculateItemTotal(item) {
-    const price = parseFloat(item.precio);
+    const price = Math.round(parseFloat(item.precio));
     if (item.oferta) {
-        const discount = price * parseFloat(item.porcentaje_descuento);
+        const discount = Math.round(price * parseFloat(item.porcentaje_descuento));
         return (price - discount) * item.quantity;
     }
     return price * item.quantity;
@@ -58,7 +97,7 @@ function calculateItemTotal(item) {
 function calculateCartTotal() {
     return cart.value.reduce((total, item) => {
         return total + calculateItemTotal(item);
-    }, 0).toFixed(2);
+    }, 0);
 }
 
 // Función para formatear moneda local Chile
@@ -73,9 +112,5 @@ function formatter(monto) {
 function getFullImageUrl(imagePath) {
     const baseUrl = 'http://127.0.0.1:8000';
     return `${baseUrl}${imagePath}`;
-}
-
-function comprarCarrito() {
-    router.push('/checkout');
 }
 </script>

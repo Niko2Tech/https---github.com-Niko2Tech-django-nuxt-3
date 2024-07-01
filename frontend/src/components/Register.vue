@@ -33,7 +33,7 @@
             <div>
                 <p v-if="FormError.password_confirmation" class="text-red-500 text-sm">{{
                     FormError.password_confirmation
-                    }}</p>
+                }}</p>
             </div>
             <div>
                 <input v-model="formValues.nombre" type="text" placeholder="Nombre"
@@ -74,6 +74,13 @@
 import { reactive, ref } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
+
+const props = defineProps({
+    redirect: {
+        type: String,
+        default: '/'
+    }
+})
 
 const emit = defineEmits(['mostrar-login'])
 const router = useRouter()
@@ -145,7 +152,7 @@ const handleRegister = async () => {
             FormError.direccion = ''
             FormError.telefono = ''
             FormError.saldo_cuenta = ''
-            router.push('/')
+            router.push(props.redirect)
         }
     } catch (e) {
         console.error("Unexpected error:", e)

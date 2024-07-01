@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-sm rounded-2xl overflow-hidden shadow-md">
+    <div class="max-w-sm rounded-2xl overflow-hidden shadow-md my-4">
         <article class="relative h-48 w-full">
             <img :src="`http://127.0.0.1:8000${data.imagen}`" alt="data Imagen" class="w-full h-full object-cover" />
             <div v-if="data.oferta" class="absolute bottom-0 left-0 bg-yellow-500 text-black px-2 py-1 rounded-tr-lg">

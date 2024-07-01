@@ -6,5 +6,9 @@ from .views import *
 routers = routers.DefaultRouter()
 routers.register("api/user", UserViewSet, "user")
 routers.register("api/producto", ProductoViewSet, "producto")
+routers.register("api/pedido", PedidoViewSet, "pedido")
+routers.register("api/detallepago", DetallePagoViewSet, "detallepago")
+routers.register("api/cliente", ClienteViewSet, "cliente")
+
 
 urlpatterns = routers.urls
