@@ -48,8 +48,8 @@ class PedidoCreateSerializer(serializers.Serializer):
     cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())
     tipo_entrega = serializers.CharField(max_length=50)
     direccion_entrega = serializers.CharField(max_length=255)
-    productos = serializers.PrimaryKeyRelatedField(
-        queryset=Producto.objects.all(), many=True
+    productos = serializers.ListField(
+        child=serializers.DictField(child=serializers.IntegerField())
     )
     metodo_pago = serializers.ChoiceField(choices=DetallePago.CHOISE_METODO_PAGO)
     monto = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -60,7 +60,20 @@ class PedidoCreateSerializer(serializers.Serializer):
         productos = validated_data.pop("productos")
 
         pedido = Pedido.objects.create(**validated_data)
-        pedido.productos.set(productos)
+
+        for producto_data in productos:
+            producto_id = producto_data["id"]
+            cantidad = producto_data["cantidad"]
+            producto = Producto.objects.get(id=producto_id)
+            precio_unitario = producto.precio
+            if producto.porcentaje_descuento:
+                precio_unitario = precio_unitario * (1 - producto.porcentaje_descuento)
+            DetallePedido.objects.create(
+                pedido=pedido,
+                producto=producto,
+                cantidad=cantidad,
+                precio_unitario=precio_unitario,
+            )
 
         DetallePago.objects.create(pedido=pedido, metodo_pago=metodo_pago, monto=monto)
 
@@ -81,11 +94,24 @@ class PedidoCreateSerializer(serializers.Serializer):
         else:
             cliente.saldo_cuenta = 0
         cliente.save()
+
         return pedido
 
 
+class DetallePedidoSerializer(serializers.ModelSerializer):
+    # nombre del producto
+    producto = serializers.CharField(source="producto.nombre")
+    imagen = serializers.CharField(source="producto.imagen")
+
+    class Meta:
+        model = DetallePedido
+        fields = ["producto", "cantidad", "precio_unitario", "imagen"]
+
+
 class PedidoSerializer(serializers.ModelSerializer):
-    productos = ProductoSerializer(many=True)
+    productos_con_cantidad = DetallePedidoSerializer(
+        many=True, source="detallepedido_set"
+    )
 
     class Meta:
         model = Pedido
@@ -94,12 +120,12 @@ class PedidoSerializer(serializers.ModelSerializer):
             "fecha",
             "estado",
             "total",
+            "cliente",
             "tipo_entrega",
             "direccion_entrega",
-            "fecha_actualizacion",
-            "cliente",
+            "productos_con_cantidad",
             "repartidor",
-            "productos",
+            "fecha_actualizacion",
         ]
 
 

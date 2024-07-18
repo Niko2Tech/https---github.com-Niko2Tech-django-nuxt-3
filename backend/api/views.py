@@ -105,7 +105,6 @@ class UserViewSet(viewsets.ModelViewSet):
             access_token = AccessToken(token)
             user_id = access_token.get("user_id")
             user = User.objects.get(id=user_id)
-
             # Buscamos el nombre del cliente asociado al usuario
             cliente = Cliente.objects.filter(usuario=user).first()
 
@@ -165,6 +164,19 @@ class PedidoViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["post"])
     def generar_pedido(self, request):
+        print(request.data)
+        # copiamos la data
+        user_id = request.data.get("cliente")
+        # validamos que el usuario exista
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            return Response(
+                {"error": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND
+            )
+        # buscamos el cliente asociado al usuario
+        cliente = Cliente.objects.get(usuario=user_id)
+        # remplazo el cliente
+        request.data["cliente"] = cliente.id
         serializer = PedidoCreateSerializer(data=request.data)
         if serializer.is_valid():
             pedido = serializer.save()
@@ -183,6 +195,64 @@ class PedidoViewSet(viewsets.ModelViewSet):
         pedidos = Pedido.objects.filter(cliente=cliente).order_by("-fecha")
         serializer = PedidoSerializer(pedidos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"])
+    def descontar_stock(self, request):
+        # buscamos el id del producto
+        producto_id = request.data.get("producto")
+        # buscamos el producto
+        producto = Producto.objects.get(id=producto_id)
+        # buscamos la cantidad a descontar
+        cantidad = request.data.get("cantidad")
+        # validamos que exista stock
+        if producto.stock < cantidad:
+            return Response(
+                {"error": "No hay suficiente stock para completar la compra"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # descontamos la cantidad de stock
+        producto.stock -= cantidad
+        producto.save()
+        return Response({"stock": producto.stock}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"])
+    def agregar_stock(self, request):
+        # buscamos el id del producto
+        producto_id = request.data.get("producto")
+        # buscamos el producto
+        producto = Producto.objects.get(id=producto_id)
+        # buscamos la cantidad a agregar
+        cantidad = request.data.get("cantidad")
+        # validamos que la cantidad sea mayor a 0
+        if cantidad <= 0:
+            return Response(
+                {"error": "La cantidad a agregar debe ser mayor a 0"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # agregamos la cantidad de stock
+        producto.stock += cantidad
+        producto.save()
+        return Response({"stock": producto.stock}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"])
+    def verificar_stock(self, request):
+        producto_id = request.data.get("producto")
+        cantidad = request.data.get("cantidad")
+
+        try:
+            producto = Producto.objects.get(id=producto_id)
+        except Producto.DoesNotExist:
+            return Response(
+                {"error": "Producto no encontrado"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if producto.stock < cantidad:
+            return Response(
+                {"error": "No hay suficiente stock disponible"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response({"message": "Stock disponible"}, status=status.HTTP_200_OK)
 
 
 class DetallePagoViewSet(viewsets.ModelViewSet):

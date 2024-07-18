@@ -32,7 +32,7 @@ class Cliente(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nombre
+        return self.nombre + " " + str(self.id)
 
 
 class Categoria(models.Model):
@@ -58,10 +58,18 @@ class Producto(models.Model):
         max_digits=5, decimal_places=2, default=0
     )
     imagen = models.ImageField(upload_to="productos/", null=True, blank=True)
+    stock = models.IntegerField(default=0)
 
     # texto que se muestra en el admin
     def __str__(self):
-        return self.nombre + " - " + str(self.precio)
+        return self.nombre + " - " + str(self.precio) + " " + str(self.id)
+
+
+class DetallePedido(models.Model):
+    pedido = models.ForeignKey("Pedido", on_delete=models.CASCADE)
+    producto = models.ForeignKey("Producto", on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 class Pedido(models.Model):
@@ -78,7 +86,9 @@ class Pedido(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     tipo_entrega = models.CharField(max_length=50)
     direccion_entrega = models.CharField(max_length=255)
-    productos = models.ManyToManyField(Producto)
+    productos_con_cantidad = models.ManyToManyField(
+        Producto, through=DetallePedido, related_name="pedidos"
+    )
     repartidor = models.ForeignKey(
         "Repartidor", null=True, blank=True, on_delete=models.SET_NULL
     )
