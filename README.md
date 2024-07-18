@@ -1,15 +1,15 @@
 # Examen DUOC - Proyecto Full Stack
 
-Este es un proyecto de examen del DUOC, construido utilizando Nuxt 3 para el frontend y Django Rest Framework para el backend.
+Este es un proyecto de examen del DUOC, construido utilizando Vue 3 para el frontend y Django Rest Framework para el backend.
 
 ## Descripción
 
-El objetivo de este proyecto es desarrollar una aplicación web full stack que demuestre el conocimiento en tecnologías modernas de desarrollo web. La aplicación está compuesta por un backend desarrollado en Django Rest Framework y un frontend desarrollado en Nuxt 3.
+El objetivo de este proyecto es desarrollar una aplicación web full stack que demuestre el conocimiento en tecnologías modernas de desarrollo web. La aplicación está compuesta por un backend desarrollado en Django Rest Framework y un frontend desarrollado en Vue 3.
 
 ## Tecnologías Utilizadas
 
 - **Backend**: Django Rest Framework
-- **Frontend**: Nuxt 3
+- **Frontend**: Vue 3
 
 ## Requisitos
 
@@ -51,7 +51,7 @@ El objetivo de este proyecto es desarrollar una aplicación web full stack que d
 
 5. Accede a `http://127.0.0.1:8000` para verificar que el backend está funcionando.
 
-### Frontend (Nuxt 3)
+### Frontend (Vue 3)
 
 1. Navega al directorio `frontend`:
 
