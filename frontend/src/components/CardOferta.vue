@@ -22,9 +22,12 @@
             <p v-else>
                 <span class="font-semibold">{{ formatter(data.precio) }}</span>
             </p>
-            <button @click="handleAddToCart"
-                class="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-semibold py-2 px-4 rounded"
-                :disabled="data.disponibilidad === false">
+            <p class="text-gray-700 text-base min-w-36">
+                Disponiblidad: <span :class="data.stock > 0 ? 'text-green-700' : 'text-red-500'">{{ data.stock }}</span>
+            </p>
+            <button @click="handleAddToCart" class="mt-4 text-white font-semibold py-2 px-4 rounded"
+                :class="data.stock == 0 ? 'bg-gray-400' : 'bg-orange-500 hover:bg-orange-700'"
+                :disabled="data.stock == 0">
                 {{ data.disponibilidad ? 'Agregar' : 'No disponible' }}
             </button>
         </div>
@@ -33,6 +36,7 @@
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import { onMounted } from 'vue';
 
 const props = defineProps({
     data: {
@@ -43,10 +47,21 @@ const props = defineProps({
 
 const cartStore = useCartStore()
 
-function handleAddToCart() {
-    cartStore.addToCart(props.data)
+async function handleAddToCart() {
+    await cartStore.addToCart(props.data)
+    // descontar stock del producto
+    props.data.stock -= 1
+    if (props.data.stock == 0) {
+        props.data.disponibilidad = false
+    }
     window.showNotification(`Producto ${props.data.nombre} agregado al carrito`)
 }
+
+onMounted(() => {
+    if (props.data.stock == 0) {
+        props.data.disponibilidad = false
+    }
+})
 
 // función para formatear moneda local Chile
 function formatter(monto) {

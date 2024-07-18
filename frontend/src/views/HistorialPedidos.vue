@@ -39,15 +39,16 @@
                 <div class="mt-4">
                     <h3 class="text-lg font-semibold mb-2">Productos:</h3>
                     <ul>
-                        <li v-for="producto in pedido.productos" :key="producto.id" class="flex items-center mb-2">
-                            <img :src="getFullImageUrl(producto.imagen)" :alt="producto.nombre"
+                        <li v-for="producto in pedido.productos_con_cantidad" :key="producto.id"
+                            class="flex items-center mb-2">
+                            <img :src="getFullImageUrl(producto.imagen)" :alt="producto.producto"
                                 class="w-16 h-16 object-cover mr-4">
                             <div>
-                                <p class="font-semibold">{{ producto.nombre }}</p>
-                                <p class="text-gray-600">{{ producto.descripcion }}</p>
-                                <p class="mt-1">Precio: {{ producto.porcentaje_descuento ? formatter((producto.precio -
-                                    (producto.porcentaje_descuento * producto.precio))) : formatter(producto.precio) }}
-                                </p>
+                                <p class="font-semibold">{{ producto.producto }}</p>
+                                <p class="text-gray-600">Cantidad: {{ producto.cantidad }}</p>
+                                <p class="text-gray-600">Precio unitario: {{ formatter(producto.precio_unitario) }}</p>
+                                <p class="text-gray-600">Total: {{ formatter(producto.precio_unitario *
+                                    producto.cantidad) }}</p>
                             </div>
                         </li>
                     </ul>
@@ -118,7 +119,7 @@ function formatDate(date) {
 }
 
 function getFullImageUrl(imagePath) {
-    const baseUrl = 'http://127.0.0.1:8000';
+    const baseUrl = 'http://127.0.0.1:8000/media/';
     return `${baseUrl}${imagePath}`;
 }
 

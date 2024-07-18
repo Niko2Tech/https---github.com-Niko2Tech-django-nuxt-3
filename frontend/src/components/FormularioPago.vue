@@ -84,7 +84,7 @@ const finalizePurchase = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authStore.token}` // Corregir interpolación
+                'Authorization': `Bearer ${authStore.token}`
             },
             body: JSON.stringify({
                 estado: 'pendiente',
@@ -92,9 +92,12 @@ const finalizePurchase = async () => {
                 cliente: authStore.userId,
                 tipo_entrega: 'domicilio',
                 direccion_entrega: props.direccion,
-                productos: cartStore.cart.map(item => item.id),
+                productos: cartStore.cart.map(item => ({
+                    id: item.id,
+                    cantidad: item.quantity
+                })),
                 metodo_pago: paymentMethod.value,
-                monto: props.totalPagar
+                monto: props.totalPagar,
             })
         });
 
