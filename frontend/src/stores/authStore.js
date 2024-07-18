@@ -86,10 +86,6 @@ export const useAuthStore = defineStore('auth', {
                     }
                 })
 
-                if (!response.ok) {
-                    throw new Error('Error durante el cierre de sesión')
-                }
-
                 this.accessToken = null
                 this.user = null
                 this.userId = null
@@ -97,7 +93,6 @@ export const useAuthStore = defineStore('auth', {
                 this.direccion = null
                 this.saldo = null
                 localStorage.removeItem('access_token')
-
                 const responseData = await response.json()
                 return responseData
             } catch (error) {
