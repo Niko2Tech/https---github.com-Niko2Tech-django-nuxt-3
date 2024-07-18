@@ -13,11 +13,11 @@
                 <span class="block sm:inline">{{ error }}</span>
             </div>
             <div>
-                <input v-model="email" type="text" placeholder="Email" required
+                <input v-model="email" type="text" placeholder="Correo" required
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
             <div>
-                <input v-model="password" type="password" placeholder="Password" required
+                <input v-model="password" type="password" placeholder="Contraseña" required
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
             <div>

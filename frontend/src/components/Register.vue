@@ -13,27 +13,27 @@
                 <span class="block sm:inline">{{ errorGeneral }}</span>
             </div>
             <div>
-                <input v-model="formValues.email" type="text" placeholder="Email"
+                <input v-model="formValues.email" type="text" placeholder="Correo"
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-600 focus:border-orange-600 sm:text-sm" />
             </div>
             <div>
                 <p v-if="FormError.email" class="text-red-500 text-sm">{{ FormError.email }}</p>
             </div>
             <div>
-                <input v-model="formValues.password" type="password" placeholder="Password"
+                <input v-model="formValues.password" type="password" placeholder="Contraseña"
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-600 focus:border-orange-600 sm:text-sm" />
             </div>
             <div>
                 <p v-if="FormError.password" class="text-red-500 text-sm">{{ FormError.password }}</p>
             </div>
             <div>
-                <input v-model="formValues.password_confirmation" type="password" placeholder="Confirmar Password"
+                <input v-model="formValues.password_confirmation" type="password" placeholder="Confirmar Contraseña"
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-600 focus:border-orange-600 sm:text-sm" />
             </div>
             <div>
                 <p v-if="FormError.password_confirmation" class="text-red-500 text-sm">{{
                     FormError.password_confirmation
-                }}</p>
+                    }}</p>
             </div>
             <div>
                 <input v-model="formValues.nombre" type="text" placeholder="Nombre"
